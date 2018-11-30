@@ -1,0 +1,73 @@
+Previous work \cite{vega2016asymptotically} has explored the theoretical conditions necessary for preserving asymptotic optimality for planning in a multi-modal setting. Such a search in this multi-modal space can also be accelerated with the use of angelic heuristics \cite{vega2018admissible} appropriate for the domain and with appropriate abstraction.
+
+The work highlights the need for rigor in consideration of
+\begin{enumerate}
+\item \textbf{Mode transitions}: In the context of manipulation these refer to prehensile grasps, and contact of the object on resting surfaces.
+\item \textbf{Abstractions and Heuristics}: The existence of heuristics in this domain can guide the search between modes as well as within modes.
+\end{enumerate}
+
+\section{1-arnm 1 object pick-and-place}
+There has been recent work \cite{schmitt2017optimal} proposing an optimal framework, demonstrated by the authors to be fast and efficient at coming up with solutions to prehensile manipulation problems. There has not been additional work to make these results reconcile with the theoretical underpinnings \cite{vega2016asymptotically}.
+
+
+\section{Multi-arm Planning}
+Recent work \cite{Dobson:2017aa,shome2017improving} has provided an efficient asymptotically optimal framework $\mathtt{dRRT}^*$ for multi-robot motion planning problems which provide 
+\begin{enumerate}
+\item \textbf{Scalability benefits}: Compared to the application of sampling based algorithms like $\mathtt{PRM}^*$ and $\mathtt{RRT}^*$ to these domains, $\mathtt{dRRT}^*$ scales to much larger number of robots and configuration spaces.
+\item \textbf{High Quality Heuristics}: Using the estimate of shortest paths that exist on the underlying constituent roadmaps, $\mathtt{dRRT}^*$ can efficiently guide the search to promising high quality solutions quickly.
+\item \textbf{High Quality Anytime Behavior}: The algorithm also provides high quality solutions fast and asymptotically improves upon them.
+\end{enumerate}
+
+
+
+\section{Applications in Manipulation Task Planning}
+The manipulation task even in the single arm form poses a variety of modes over which the solution lies, as outlined in previous work \cite{dobson2015planning}. An instance of the modes and mode transitions for 
+Prehensile multi-arm manipulation task planning poses a variety of challenges which can be classified based on the increasing level of complexity and the search space. The applications include large scale pick-and-place or sorting tasks, as may arise in warehouse automation, service robotics or waste management. 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.42\textwidth]{figures/single_arm}
+\includegraphics[width=0.42\textwidth]{figures/dual_arm}
+\caption{The mode transition diagram for a single arm (\textit{top}), and for two arms (\textit{bottom}), manipulating 1 object. $M$ refers to the moves, and $T$ refers to the transfers of the arms. In the two arm case, the arms are indexed by $L$ and $R$ respectively.
+}
+\label{fig:single_dual_modes}
+\end{figure}
+
+\subsection{2-arm, 1 object pick-and-place}
+This is the simplest instance of a multi-arm task planning problem which involves the coordination of 2 arms in a shared workspace to execute an arbitrary pick-and-place of an object that is graspable by at least one arm in its starting pose, and at least one arm in its target pose. Only one arm at a time is sufficient to grasp and move the object.
+
+The sort of modes this introduces include:
+\begin{enumerate}
+\item \textbf{Moves}: The arms moving without the object grasped. This only involves coordination of the arms to avoid obstacles, the object and each other. In such a mode, the object is resting in a stable fashion on a support surface.
+\item \textbf{Transfers}: Either arm can grasp the object, in any valid relative configuration that enforces a stable, prehensile grasp. Any motion of the arm induces a motion of the object while preserving the relative configuration of the object and the end-effector. 
+\end{enumerate}
+
+The mode transitions introduced by this problem include
+\begin{enumerate}
+\item \textbf{Grasp}: This is when one arm engages the grasp on the object, while the other arm is not involved.
+\item \textbf{Place}: This is when one arm releases the object while the other arm is not involved. It is assumed that this is only valid if the relative configuration of the object and an attached surface allows a stable placement.
+\item \textbf{Hand-off}: Both the arms are in configurations that can grasp the object. The arm currently not grasping the object, engages the grasp. The arm currently grasping the object releases the object. This lets the object move with the other arm.
+\end{enumerate}
+
+
+It should be noted that the solution can involve one or a combination of interesting kinds of prehensile manipulation primitives
+\begin{enumerate}
+\item \textbf{Monotone Pick-and-Place}: A pick and place that involves only one arm and one grasp.
+\item \textbf{Regrasps}: Regrasps might be necessary if no initial grasp allows the final placement in the target pose.
+\item \textbf{Hand-offs}: If the target pose is not reachable, hand-offs might be necessary for achieve the target placement. It is interesting to note that hand-offs also afford a possible way to achieve regrasps.
+\end{enumerate}
+
+The objective is to discover a solution that minimizes the cost of the solution, in terms of some metric like Euclidean arc length in the combined configuration space of the robots, or sum of Euclidean arc lengths etc.
+
+The motion planning primitive that can be used in this scenario, as well as some of the underlying heuristics, can arise out of $\mathtt{dRRT}^*$.
+
+\subsection{Many-arm, 1 object pick-and-place}
+The underlying types of modes, transitions and types of solution remain the same. The complexity arises out of the much larger number of modes.
+
+\subsection{2-arm, many object assembly}
+The increased number of objects also leads to a much larger number of modes arising out of the potential arm-object grasp and release assignments. In simpler variants of the problem, like monotone object packing, where the start and target poses of the objects do not overlap, the objects might mostly be possible to place with a single grasp. The choice then becomes one of optimality, to select an order that optimizes the metric. Other more complex motivating problems here include assembly operations like reconstructing a puzzle using two arms, where there is a combinatorially large number of orderings of objects to be placed in their target poses with precise placement operations, in the assembly. The choice of order can heavily affect the feasibility as well, depending upon the proximity and the constraints imposed in the assemblage.
+
+Heuristics in this scenario get into object-level reasoning, which prior work \cite{shome2018rearrangement} has explored in terms of the study of efficient solution sub-structures for object rearrangement.
+
+\subsection{Many-arm, many object assembly}
+Extending the 2-arm problem to multiple arms increases the options for the object-arm assignment and brings forth even more challenging scenarios of large factory settings occupied by teams of robots coordinating for affecting multiple object pick-and-places.
