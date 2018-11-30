@@ -1,1 +1,35 @@
-The manipulation task planning problem involves $k$ robots 
+The manipulation task planning problem involves $k$ manipulators $\arms=\{\arm_1 \cdots \arm_k\}$, $l$ objects $\objectset=\{\object_1\cdots\object_l\}$. The objects lie in a set of initial stable poses in $SE(3)$ corresponding to $\ainit={\pose_1^i \cdots\pose_l^i }$ and a final set of valid stable target poses $\atarget=\{\pose_1^f \cdots\pose_l^f \}$.
+
+The combined task space consists of the $d_i$ dimensional configuration spaces of all the robots 
+$$\cspace_{\arms} = \cspace_1 \times \cdots \cspace_k \subseteq \reals^{\sum_{i=1}^{k} d_i}$$
+$\cfull$ comprises of the object poses as well.
+$$ \cfull = \cspace_{\arms} \times \Pspace_1 \times \cdots \Pspace_l  = \carms \times \cspace_{\Pspace}$$
+where $\Pspace_i=SE(3)$ for each object $\object_i$.
+$\cfree \subseteq \cfull$ is the collision free subset of the space.
+
+The current work shall assume the prehensile quasi-static manipulation task planning problem of transferring all the objects from the initial to the target poses using the manipulators. 
+
+The following assumptions follow from this considerations
+\begin{enumerate}
+\item \textbf{Manipulability:} Each manipulator is equipped with an end-effector which is capable of manipulating the objects. For the sake of simplicity let us assume that every manipulator is capable of manipulating every object. The act of manipulation involves engaging a static relative configuration between the end-effector and the object in the form of a \textbf{grasp}. Thereon, till the grasp is disengaged the object shall attain a pose with the same grasping offset from the instantaneous end-effector pose. 
+\item \textbf{Stable actions:} Actions in the context of manipulation task planning can be broken down into grasp and release. These are restricted to object configurations which are physically stable (i.e., either supported by a supporting surface like a table, or by another end-effector). An object is assumed to never move unless affected by an end-effector.
+\end{enumerate}
+
+This means that the focus of the algorithm can be on $\cspace_{\arms}$. 
+Assume that solution to the manipulation task planning problem will correspond to a continuous smooth parametrized curve in $\carms$ defined as $\pi : \carms \rightarrow [0,1]$. Define a function 
+$$ \objectmotion : \cspace_{\Pspace} \times \pi \rightarrow \pi_o $$
+where $ \pi_o : \cspace_{\Pspace} \rightarrow [0,1]$. This function, given an initial set of poses and a trajectory for the manipulators, gives the resultant sequence of poses of the object moved by $\pi$. $\pi_o[0]$ is the initial poses of the objects and $\pi_o[1]$ corresponds to the final poses.
+
+\noindent \textbf{Feasible Solution:} Under the assumptions each such curve $\pi$ maps to an unique $\pi_{\object}$ that traces the pose of the objects under the actions performed by the manipulators. A feasible solution is 
+$$\pi\ s.t.\ \ \objectmotion(\ainit, \pi) = \pi_o, \pi_o[1] = \atarget$$
+
+\noindent \textbf{Cost Function:} Given a cost function over a curve in $\carms$, 
+$$\cost(\pi) : \underset{P}{sup} { \sum_{t_i\in P} \cost( \pi(t_i) - \pi(t_{i-1}) ) } $$ over the domain of $\pi$.
+i.e., the supremum partition $P : 0=t_1<t_2\cdots<t_m=1$ maximizes the cost of the curve.
+
+Restrict the $\cost$ to be strictly non-decreasing over $\pi$. Note that this includes cost functions that involve motions of the objects since in manipulation the objects are rigidly attached to the end-effectors.
+
+\noindent \textbf{Optimal Solution: } The feasible solution that minimizes the cost function over the trajectory. 
+
+$$ \pi^* = \underset{\pi}{argmin} {\ \cost(\pi)}$$
+
